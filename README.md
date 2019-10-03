@@ -31,3 +31,5 @@ KPIs
 13. Highly experienced employee in each department.
 14. Salary Distribution of highly experienced employee in company.
 15. In which department total no of project is greater than 40% of overall project.
+
+Note: KPI 15 will be intersting, we cannot solve this using regular nested sql queries. Hence we need to use analytic functions.
