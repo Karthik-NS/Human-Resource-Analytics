@@ -1,0 +1,114 @@
+
+
+CREATE EXTERNAL TABLE Hr(Satisfaction_level FLOAT,
+ Last_evaluation FLOAT, 
+ Number_Of_projects INT, 
+ Average_monthly_hours INT,
+ Time_spend_company INT,		
+ Work_accident INT,
+ Employee_left INT,
+ Promotion_last_5years INT,
+ Department STRING, 
+ Salary STRING) 
+ ROW FORMAT DELIMITED FIELDS TERMINATED BY ','  
+ LOCATION "/user/srikarthik/HRHR" 
+ tblproperties ("skip.header.line.count"="1");
+
+#Q1. Average satisfaction_level for individual Department?
+
+SELECT department, AVG(Satisfaction_level) AS avg_satisfaction FROM Hr GROUP BY department;
+
+#Q2. How many employees are left in each individual Department?
+
+SELECT department, SUM(Employee_left) AS total_left FROM Hr GROUP BY department;
+
+#Q3. Department wise average monthly working hour?
+
+SELECT department, AVG(Average_monthly_hours) AS total_average_monthly_hours  FROM Hr GROUP BY department;
+
+#Q4. No of Project done by individual Department.
+
+SELECT department, SUM(Number_Of_projects) AS total_Projects FROM Hr GROUP BY department;
+
+#Q5. Department wise salary Distribution.There is a 3 level in salary (low,medium and high).
+
+SELECT department,salary, Count(salary) AS total_Salary_Count FROM Hr GROUP BY department, salary;
+
+
+#Q6. In individual Department How many Employees promoted in last 5 years but still left the company.
+
+SELECT department, SUM(Promotion_last_5years) AS total_Promotions FROM Hr 
+WHERE Employee_left=1 GROUP BY department;
+
+(or)
+
+SELECT department, COUNT(*) AS total_Promotions FROM Hr 
+WHERE Employee_left=1 AND Promotion_last_5years=1 GROUP BY department;
+
+
+#Q7. Department wise average satisfaction level, average working hours and no of employee who left company.
+
+SELECT department, AVG(Satisfaction_level) AS avg_satisfaction, AVG(Average_monthly_hours) AS total_average_monthly_hours, COUNT(CASE WHEN  Employee_left=1 THEN 1 END) AS total_Employees_left FROM Hr GROUP BY department;
+
+
+
+#Q8. When salary is low find out the Department wise mean satisfaction level , average working hours and no of employee who left company.
+
+SELECT department, AVG(Satisfaction_level) AS avg_satisfaction, AVG(Average_monthly_hours) AS total_average_monthly_hours, COUNT(CASE WHEN  Employee_left=1 THEN 1 END) AS total_Employees_left FROM Hr WHERE salary LIKE 'low' GROUP BY department;
+
+#Q9. When salary is low and not promoted in last 5 year than find out the Department wise mean satisfaction level, average working hours and no of employee who left company.
+
+SELECT department, AVG(Satisfaction_level) AS avg_satisfaction, AVG(Average_monthly_hours) AS total_average_monthly_hours, COUNT(CASE WHEN  Employee_left=1 THEN 1 END) AS total_Employees_left FROM Hr WHERE salary LIKE 'low' and Promotion_last_5years=0 GROUP BY department;
+
+
+#Q10. For individual department find out the average satisfaction_level, average evaluation and percentage of employees left company on the basis of salary.
+
+SELECT department, salary, round(AVG(Satisfaction_level),2) AS avg_satisfaction, round(AVG(Last_evaluation),2) AS average_evaluation, round(sum(Employee_left)/count(1)*100,2) As percent_left FROM Hr GROUP BY department, salary; 
+
+
+
+#Q11. How many employees left, distribution based on experience.
+
+SELECT Time_spend_company, SUM(Employee_left) AS employee_count FROM Hr GROUP BY Time_spend_company;
+
+#Q12. Name of the department where more than 70% employees left the company.
+
+
+SELECT department, SUM(Employee_left)  as total_left_dep FROM Hr group by department having SUM(cast(Employee_left as float)) > 0.70*count(department);
+
+
+#Q13. Highly experienced employee in each department.
+
+SELECT department, MAX(Time_spend_company) as Highly_Exp FROM Hr GROUP BY department;
+
+#Q14. Salary Distribution of highly experienced employee in company.
+
+SELECT salary, MAX(Time_spend_company) as Highly_Exp FROM Hr GROUP BY salary;
+
+
+#Q15. In which department total no of project is greater than 20% of overall project.
+
+
+SELECT department, total_projects_dep 
+FROM       
+(
+SELECT department, 
+       SUM(Number_Of_projects) over(partition by department) as total_projects_dep, 
+       SUM(Number_Of_projects) over() as total_projects
+  FROM Hr
+)s
+WHERE total_projects_dep > CAST(0.2*total_projects AS INT)
+GROUP BY department, total_projects_dep; --this can be removed if there is only one record per department
+
+
+(or)
+
+SELECT department, total_projects_dep 
+FROM       
+(
+SELECT distinct department, 
+       SUM(Number_Of_projects) over(partition by department) as total_projects_dep, 
+       SUM(Number_Of_projects) over() as total_projects
+  FROM Hr
+)s
+WHERE total_projects_dep > CAST(0.2*total_projects AS INT);
