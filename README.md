@@ -2,7 +2,7 @@
 Human Resource Analytics Using Hive
 
 Objective
-Analyze the Human resource data set and generate various insights about why are our best and most experienced employees leaving prematurely?
+Ingest HR data from mysql database using sqoop into HDFS and then using Hive analyze the Human resource data set and generate various insights about why are our best and most experienced employees leaving prematurely?
 Data Description
  Satisfaction_level
  Last evaluation
