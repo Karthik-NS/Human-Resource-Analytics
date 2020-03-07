@@ -4,7 +4,8 @@ Step1: Using Sqoop Ingest data from MySQL data base into HDFS
  --username retail_user --password itversity \
  --table Hr_data -m 1 --target-dir /user/srikarthik/HRHR --as-textfile 
 
-Step2: Using Hive do analysis required on 
+Step2: Using Hive do analysis required on HR DATA:
+
 CREATE EXTERNAL TABLE Hr(Satisfaction_level FLOAT,
  Last_evaluation FLOAT, 
  Number_Of_projects INT, 
