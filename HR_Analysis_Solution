@@ -1,5 +1,10 @@
+Step1: Using Sqoop Ingest data from MySQL data base into HDFS
 
+ sqoop import --connect jdbc:mysql://ms.itversity.com/retail_export \
+ --username retail_user --password itversity \
+ --table Hr_data -m 1 --target-dir /user/srikarthik/HRHR --as-textfile 
 
+Step2: Using Hive do analysis required on 
 CREATE EXTERNAL TABLE Hr(Satisfaction_level FLOAT,
  Last_evaluation FLOAT, 
  Number_Of_projects INT, 
@@ -49,7 +54,6 @@ WHERE Employee_left=1 AND Promotion_last_5years=1 GROUP BY department;
 #Q7. Department wise average satisfaction level, average working hours and no of employee who left company.
 
 SELECT department, AVG(Satisfaction_level) AS avg_satisfaction, AVG(Average_monthly_hours) AS total_average_monthly_hours, COUNT(CASE WHEN  Employee_left=1 THEN 1 END) AS total_Employees_left FROM Hr GROUP BY department;
-
 
 
 #Q8. When salary is low find out the Department wise mean satisfaction level , average working hours and no of employee who left company.
